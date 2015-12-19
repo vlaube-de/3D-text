@@ -2,7 +2,23 @@
 <html lang="en">
 <head>
 	<title>3D text</title>
-	<link href="css/3D-text.css" rel="stylesheet">
+	<style type="text/css">
+
+
+body {
+	background-color: #e5e4e1;
+	color: #333;
+	font-family: sans-serif;
+	padding: 0 5em;
+}
+
+h1 {
+  font-size: 5em;
+  line-height: 1.1;
+}
+
+
+	</style>
 </head>
 <body>
 
@@ -40,6 +56,90 @@ function lettering(elements) {
 			newElement = document.createElement('span');
 			newElement.className = 'char' + (i+1);
 			newElement.appendChild(textNode);
+
+			var red = {
+				h: i * 2,
+				s: 60,
+				l: 50,
+			};
+			var black = {
+				h: 0,
+				s: 0,
+				l: 0,
+			}
+			var white = {
+				h: 0,
+				s: 0,
+				l: 100,
+			}
+			function toCSS(c) {
+				var result;
+
+				if(c.a === undefined) {
+					result = "hsl(" + c.h + ", "+ c.s +"%, " + c.l + "%)";
+				} else {
+					result = "hsla(" + c.h + ", "+ c.s +"%, " + c.l + "%, " + c.a + ")";
+				}
+
+				return result;
+			}
+			function lighten(c, dl) {
+				return {
+					h: c.h,
+					s: c.s,
+					l: c.l + dl,
+					a: c.a,
+				};
+			}
+			function darken(c, dl) {
+				return lighten(c, -dl);
+			}
+			function fade(c, a) {
+				return {
+					h: c.h,
+					s: c.s,
+					l: c.l,
+					a: a,
+				}
+			}
+			function lerp(start, end, t) {
+			    return (1 - t) * start + t * end;
+			}
+			function mix(c1, c2, weight) {
+				weight = weight | 0.5;
+
+				var result = {
+					h: lerp(c1.h, c2.h, weight),
+					s: lerp(c1.s, c2.s, weight),
+					l: lerp(c1.l, c2.l, weight),
+					a: lerp(c1.a || 1.0, c2.a || 1.0, weight),
+				};
+
+				return result;
+			}
+			newElement.style.color = toCSS(red);
+			newElement.style.textShadow = [
+				"-1px 0 1px " + toCSS(lighten(red, 10)),
+				"1px 0 1px " + toCSS(lighten(red, 10)),
+
+				"-1px 1px 0 " + toCSS(darken(red, 5)),
+				"-1px 2px 0 " + toCSS(darken(red, 6)),
+				"-1px 3px 0 " + toCSS(darken(red, 7)),
+				"-1px 4px 0 " + toCSS(darken(red, 8)),
+				"-1px 5px 1px " + toCSS(darken(red, 15)),
+				
+				"1px 1px 0 " + toCSS(darken(red, 5)),
+				"1px 2px 0 " + toCSS(darken(red, 6)),
+				"1px 3px 0 " + toCSS(darken(red, 7)),
+				"1px 4px 0 " + toCSS(darken(red, 8)),
+				"1px 5px 1px " + toCSS(darken(red, 15)),
+
+				"0 6px 4px " + toCSS(mix(red, fade(white, 60), 0.6)),
+
+				"0 -6px 8px " + toCSS(fade(black, 0.02)),
+				"0 6px 6px " + toCSS(fade(black, 0.3)),
+				"0 8px 16px " + toCSS(fade(black, 0.2)),
+			].join(",");
 
 			element.parentNode.insertBefore(newElement, element);
 		}
