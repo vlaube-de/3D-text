@@ -10,12 +10,45 @@
 	
 	<p>3D text by <a href="http://jasonrobb.com">Jason Robb</a>. Fork it or something <a href="https://github.com/jasonrobb/3D-text">on Github</a>.</p>
 
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery.lettering.js"></script>
 	<script>
-	$(document).ready(function() {
-		$("h1").lettering();
-	});
+
+
+function lettering(elements) {
+	if(elements.length === undefined) {
+		elements = [elements];
+	} else if(elements.slice === undefined){
+		elements = Array.prototype.slice.call(elements);
+	}
+
+	while(elements.length) {
+		var element = elements.pop();
+
+		if(element.childNodes) {
+			var childrensArray = Array.prototype.slice.call(element.childNodes);
+			elements = elements.concat(childrensArray);
+		}
+
+		if(element.nodeType !== Node.TEXT_NODE) {
+			continue;
+		}
+
+		var text = element.nodeValue;
+		for (var i = 0; i < text.length; i++) {
+			var newElement = document.createTextNode(text[i]);
+
+			var textNode = newElement;
+			newElement = document.createElement('span');
+			newElement.className = 'char' + (i+1);
+			newElement.appendChild(textNode);
+
+			element.parentNode.insertBefore(newElement, element);
+		}
+		element.parentNode.removeChild(element);
+	}
+}
+lettering(document.getElementsByTagName('h1'));
+
+
 	</script>
 </body>
 </html>
